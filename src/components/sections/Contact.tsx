@@ -23,28 +23,38 @@ export function Contact() {
         e.preventDefault();
         setIsSubmitting(true);
         setError(null);
+
+        const formspreeUrl = import.meta.env.VITE_FORMSPREE_URL;
+
+        if (!formspreeUrl) {
+            setError("Form configuration error: VITE_FORMSPREE_URL is missing. Please check your .env file and restart the development server.");
+            setIsSubmitting(false);
+            return;
+        }
+
         const formData = new FormData(e.currentTarget);
+        const data = Object.fromEntries(formData.entries());
 
         try {
-            const response: Response = await fetch(import.meta.env.VITE_FORMSPREE_URL, {
+            const response: Response = await fetch(formspreeUrl, {
                 method: "POST",
-                body: formData,
-                headers: { Accept: "application/json" },
+                body: JSON.stringify(data),
+                headers: { 
+                    "Content-Type": "application/json",
+                    "Accept": "application/json" 
+                },
             });
 
             if (response.ok) {
                 setIsSuccess(true);
                 e.currentTarget.reset();
             } else {
-                throw new Error("Failed to send message.");
+                const result = await response.json();
+                setError(result.error || "Failed to send message. Please try again later.");
             }
-        } catch (error) {
-            if (error instanceof TypeError) {
-                setIsSuccess(true);
-                e.currentTarget.reset();
-            } else {
-                setError("Something went wrong. Please try again.");
-            }
+        } catch (err) {
+            console.error("Submission error:", err);
+            setError("Network error. Please check your internet connection.");
         } finally {
             setIsSubmitting(false);
         }
@@ -77,7 +87,7 @@ export function Contact() {
                 <div className="grid md:grid-cols-2 gap-6">
                     <div className="space-y-2 group">
                         <Label htmlFor="name">Name</Label>
-                        <Input id="name" name="name" required placeholder="John Doe" className="bg-black/20 border-white/10 focus:border-primary/50 focus:ring-primary/20 h-12 rounded-xl" />
+                        <Input id="name" name="name" required placeholder="Your Name" className="bg-black/20 border-white/10 focus:border-primary/50 focus:ring-primary/20 h-12 rounded-xl" />
                     </div>
                     <div className="space-y-2 group">
                         <Label htmlFor="email">Email</Label>
