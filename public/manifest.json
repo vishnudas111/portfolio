@@ -1,0 +1,16 @@
+{
+  "name": "Vishnudas V U — Portfolio",
+  "short_name": "Vishnudas",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0d0e",
+  "theme_color": "#fde047",
+  "description": "Vishnudas V U — Softwware developer portfolio. About, work, experience and contact.",
+  "icons": [
+    {
+      "src": "/public/favicon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
